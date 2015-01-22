@@ -18,9 +18,16 @@ public class GameOverActivity extends Activity
         @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            MainActivity.activity.finish();;
-        setContentView(R.layout.activity_gameover);
-        boutonRetour = (Button) findViewById(R.id.buttonRetour);
+
+        if(MainActivity.gagne){
+
+            setContentView(R.layout.activity_win);
+            boutonRetour = (Button) findViewById(R.id.buttonRetour);
+        }else{
+
+            setContentView(R.layout.activity_gameover);
+            boutonRetour = (Button) findViewById(R.id.buttonRetour);
+        }
 
 
         boutonRetour.setOnClickListener(new View.OnClickListener() {
@@ -28,7 +35,7 @@ public class GameOverActivity extends Activity
             public void onClick(View v) {
 
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AccueilActivity.class);
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);

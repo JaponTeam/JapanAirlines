@@ -34,6 +34,7 @@ import fr.m2dl.japanairlines.services.RandomGenerator;
 public class MainActivity extends Activity implements SensorEventListener {
 
     public static boolean edited = false;
+    public static boolean gagne =false;
     private boolean isGameOver = false;
 
     private boolean isStarted;
@@ -297,10 +298,10 @@ public class MainActivity extends Activity implements SensorEventListener {
             @Override
             public void run() {
                 if(copiePourPiste.isPisteAtter() && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
-                    Log.d("","Gagné");
+                    gagne = true;
                 }
                 if(!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
-
+gagne = false;
                     isGameOver = true;
                     planeImage.setBackgroundResource(R.drawable.explose);
                     Intent intent = new Intent(getApplicationContext(), GameOverActivity.class);

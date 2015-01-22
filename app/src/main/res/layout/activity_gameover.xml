@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="46dp"
-                android:text="Vous avez Gagné !!\n\nEncore?"
+                android:text="Vous avez Perdu !!\n\nEncore?"
                 android:gravity="center"
                 android:id="@+id/textView"
                 android:background="#FFFFFF"
@@ -47,6 +47,7 @@
                 android:layout_height="100dp"
                 android:id="@+id/buttonRetour"
                 android:layout_gravity="center_vertical"
+                android:background="@drawable/button_ok"
                 android:layout_marginRight="10dp" />
 
         </LinearLayout>

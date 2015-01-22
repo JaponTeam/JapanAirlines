@@ -47,7 +47,8 @@
                 android:layout_height="100dp"
                 android:id="@+id/buttonRetour"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp" />
+                android:layout_marginRight="10dp"
+                android:background="@drawable/button_ok"/>
 
         </LinearLayout>
     </LinearLayout>
