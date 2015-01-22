@@ -11,8 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import java.util.ArrayList;
 
 
 public class EditorActivity extends Activity implements View.OnTouchListener {
@@ -21,10 +22,14 @@ public class EditorActivity extends Activity implements View.OnTouchListener {
     private int screenHeight;
     private int screenWidth;
 
+    ArrayList<DrawableImageView[]> cells;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+
+        cells = new ArrayList<>();
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
@@ -50,18 +55,46 @@ public class EditorActivity extends Activity implements View.OnTouchListener {
                     screenWidth/3,
                     screenHeight/5
             );
-            repeatedLayout.setOrientation(LinearLayout.HORIZONTAL); 
-            //TODO generic
+            repeatedLayout.setOrientation(LinearLayout.HORIZONTAL);
+
             DrawableImageView left = new DrawableImageView(this);
             left.setLayoutParams(layoutParams);
+            left.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DrawableImageView view = (DrawableImageView) v;
+                    view.changeState();
+                }
+            });
             DrawableImageView middle = new DrawableImageView(this);
             middle.setLayoutParams(layoutParams);
+            middle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DrawableImageView view = (DrawableImageView) v;
+                    view.changeState();
+                }
+            });
             DrawableImageView right = new DrawableImageView(this);
             right.setLayoutParams(layoutParams);
+            right.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DrawableImageView view = (DrawableImageView) v;
+                    view.changeState();
+                }
+            });
 
             repeatedLayout.addView(left);
             repeatedLayout.addView(middle);
             repeatedLayout.addView(right);
+
+            DrawableImageView[] line = new DrawableImageView[3];
+            line[0] = left;
+            line[1] = middle;
+            line[2] = right;
+            cells.add(line);
+
             linearLayout.addView(repeatedLayout);
         }
     }

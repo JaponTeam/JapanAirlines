@@ -12,6 +12,8 @@ import android.widget.ImageView;
  */
 public class DrawableImageView extends ImageView {
 
+    private boolean checked;
+
     public DrawableImageView(Context context) {
         super(context);
     }
@@ -27,9 +29,20 @@ public class DrawableImageView extends ImageView {
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.STROKE);
 
+        if (!isChecked()) {
+            paint.setStyle(Paint.Style.STROKE);
+        }
 
         canvas.drawRect(0, 0, width, height, paint);
+    }
+
+    public void changeState() {
+        checked = !checked;
+        invalidate();
+    }
+
+    public boolean isChecked() {
+        return checked;
     }
 }
