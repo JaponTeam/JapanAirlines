@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import fr.m2dl.japanairlines.domain.Obstacle;
 
 
 public class EditorActivity extends ActionBarActivity implements View.OnTouchListener {
@@ -119,17 +122,38 @@ public class EditorActivity extends ActionBarActivity implements View.OnTouchLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_start:
+                startLevel();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
+    }
+
+    private ArrayList<Obstacle> generateObstacles(){
+        ArrayList<Obstacle> ret = new ArrayList<>();
+
+        for(DrawableImageView[] tab : cells) {
+            for (int i = 0; i < 3; ++i) {
+                Obstacle obstacle = null;
+                if(tab[i].isChecked()) {
+                    obstacle = new Obstacle(i, cells.indexOf(tab));
+                } else {
+                    obstacle = new Obstacle(-1, -1);
+                }
+                ret.add(obstacle);
+            }
+        }
+
+        return ret;
+    }
+
+    private void startLevel() {
+        generateObstacles();
+        // Launch intent
     }
 
     @Override
