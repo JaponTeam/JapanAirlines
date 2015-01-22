@@ -22,14 +22,31 @@
 
 </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="dezd"
-        android:id="@+id/textView"
-        android:layout_alignParentStart="false"
-        android:layout_gravity="center" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="25dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Altimeter"
+            android:id="@+id/altimeterLabel" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAlignment="viewEnd"
+            android:text="+ 0"
+            android:id="@+id/altimeterValue" />
+
+    </LinearLayout>
 
     <ImageView
         android:layout_width="100dp"
