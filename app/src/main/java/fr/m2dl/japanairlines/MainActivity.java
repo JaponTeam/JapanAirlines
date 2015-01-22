@@ -7,15 +7,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import fr.m2dl.japanairlines.domain.Plane;
 import fr.m2dl.japanairlines.services.BlowRecorder;
@@ -32,9 +30,19 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageView planeImage;
 
     private Sensor accelerometer;
+    private TextView altimeterValue;
 
     private HeightManager heightManager;
     private Plane plane;
+
+    public void updateHeightView() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                altimeterValue.setText("+ " + plane.getCurrentHeightLevel());
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +50,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
 
         plane = new Plane();
-        heightManager = new HeightManager(plane);
+        heightManager = new HeightManager(plane, this);
         startBlowRecording();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -51,6 +59,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         planeImage = (ImageView) findViewById(R.id.plane);
         mHandler = new Handler();
+        altimeterValue = (TextView) findViewById(R.id.altimeterValue);
 
         Thread t = new Thread(new Runnable() {
             @Override

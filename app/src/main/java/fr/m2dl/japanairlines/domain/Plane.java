@@ -7,9 +7,14 @@ import android.util.Log;
  */
 public class Plane {
     private static final int MAX_HEIGHT = 3;
-    int currentHeightLevel;
-    int distanceFromStart;
-    int distanceToEnd;
+
+    private int currentHeightLevel;
+    private int distanceFromStart;
+    private int distanceToEnd;
+
+    public int getCurrentHeightLevel() {
+        return currentHeightLevel;
+    }
 
     public void moveDown() {
         if (currentHeightLevel > 0) {
