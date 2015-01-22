@@ -20,6 +20,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <activity
+            android:name="fr.m2dl.japanairlines.GameOverActivity"
+            android:label="@string/app_name"
+
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

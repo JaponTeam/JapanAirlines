@@ -1,22 +1,26 @@
 package fr.m2dl.japanairlines;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,19 +31,26 @@ import fr.m2dl.japanairlines.services.HeightManager;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
+    private LinearLayout layout2;
     private LinearLayout layout;
     private RelativeLayout mainLayout;
     private Handler mHandler;
     private Runnable mStatusChecker;
     private SensorManager sensorManager;
     private ImageView planeImage;
+    private ImageView roadImage;
 
     private Sensor accelerometer;
     private TextView altimeterValue;
 
+    private BlowRecorder blowRecorder;
+
     private HeightManager heightManager;
     private Plane plane;
 
+    private int screenHeight;
+
+    private Activity activity;
     public void updateHeightView() {
         runOnUiThread(new Runnable() {
             @Override
@@ -53,7 +64,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+    this.activity = this;
         plane = new Plane();
         heightManager = new HeightManager(plane, this);
         startBlowRecording();
@@ -61,10 +72,42 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         layout = (LinearLayout) findViewById(R.id.layout);
+        layout2 = new LinearLayout(this);
+
+        layout2.setLayoutParams(layout.getLayoutParams());
+        layout2.setBackgroundResource(R.drawable.grass);
+
+//        layout2.setY(layout2.getY()+layout2.getHeight());
+//        layout2.setX(layout.getX());
+
+
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        screenHeight = metrics.heightPixels;
+
+        TypedValue tv = new TypedValue();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        {
+            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+                screenHeight -= TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+        }
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0)
+            screenHeight -= getResources().getDimensionPixelSize(resourceId);
+
+        layout2.setY(-screenHeight);
+        layout2.setX(layout.getX());
+
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         planeImage = (ImageView) findViewById(R.id.plane);
+        roadImage = (ImageView) findViewById(R.id.road);
         mHandler = new Handler();
         altimeterValue = (TextView) findViewById(R.id.altimeterValue);
+
+
+        mainLayout.addView(layout2, 0);
+
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -76,23 +119,26 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         t.start();
 
-        obstacle(200);
-        obstacle(100);
+//        obstacle(256,300);
+//        obstacle(512,0);
+//        obstacle(0,678);
+//        obstacle(1500,2540);
+//        obstacle(0,678);
 
     }
 
     private void startBlowRecording() {
-        Thread blowRecorder = new Thread(new Runnable() {
+        Thread blowRecorderThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                BlowRecorder blowRecorder = new BlowRecorder();
+                blowRecorder = new BlowRecorder();
                 while (true) {
                     blowRecorder.recordBlow();
                     heightManager.movePlaneUp();
                 }
             }
         });
-        blowRecorder.start();
+        blowRecorderThread.start();
     }
 
     @Override
@@ -113,19 +159,31 @@ public class MainActivity extends Activity implements SensorEventListener {
             @Override
             public void run() {
 
-                ImageView i1 = new ImageView(getApplicationContext());
+                layout.setBackgroundResource(R.drawable.grass);
+
+                //roadImage.setY(roadImage.getY()+10);
+                layout.setY(layout.getY()+10);
+                layout2.setY(layout2.getY()+10);
 
 
 
-                i1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
 
+                Log.d("",layout.getY()+"---"+screenHeight);
+                if(layout.getY()>= screenHeight){
+                    layout.setY(-screenHeight);
+                    roadImage.setVisibility(View.INVISIBLE);
+                }
+                if(layout2.getY()>=screenHeight){
+                    layout2.setY(- screenHeight);
+                }
 
-                i1.setImageResource(R.drawable.grass);
-                layout.addView(i1, 0);
+
+//                i1.setImageResource(R.drawable.grass);
+//                layout.addView(i1, 0);
 
 
-                mHandler.postDelayed(mStatusChecker, 300);
+                mHandler.postDelayed(mStatusChecker, 30);
             }
         };
     }
@@ -168,7 +226,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
-    public void obstacle(float placement){
+    public void obstacle(float x, float y){
         final ImageView obstacle = new ImageView(this);
         final Runnable mRunnableObstalce;
 
@@ -180,7 +238,14 @@ public class MainActivity extends Activity implements SensorEventListener {
             @Override
             public void run() {
                 if(isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
-                    Log.d("","BAM");
+                    planeImage.setBackgroundResource(R.drawable.explose);
+
+                    Intent intent = new Intent(getApplicationContext(), GameOverActivity.class);
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //activity.finish();
+                    getApplicationContext().startActivity(intent);
+
                 }
                 obstacle.setY(obstacle.getY() + 5);
 
@@ -198,8 +263,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
         mainLayout.addView(obstacle);
-        obstacle.setX(placement);
-        obstacle.setY(-300);
+        obstacle.setX(x);
+        obstacle.setY(-y-300);
 
     }
 
@@ -214,5 +279,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         }else{
             return false;
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        blowRecorder.stopRecording();
     }
 }

@@ -27,7 +27,7 @@ public class BlowRecorder {
         mRecorder.start();
     }
 
-    private void stopRecording() {
+    public void stopRecording() {
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
