@@ -1,16 +1,9 @@
 package fr.m2dl.japanairlines.services;
 
-import android.app.Service;
-import android.content.Intent;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.IBinder;
 import android.util.Log;
 
 import java.io.IOException;
-
-import fr.m2dl.japanairlines.R;
 
 /**
  * Created by msoum on 22/01/15.
