@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#34495e"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#34495e"
+        android:orientation="vertical"
+        android:padding="3dp" >
+
+        <TextView
+            android:id="@+id/textViewCardiaque"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#2c3e50"
+            android:gravity="center|top"
+            android:padding="3dp"
+            android:textSize="20sp"
+            android:text="CHOISISSEZ VOITRE STYLE DE NIVEAU"
+            android:layout_gravity="center"
+            android:textColor="#bdc3c7" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#34495e"
+        android:orientation="horizontal"
+        android:padding="3dp" >
+
+        <Button
+            android:id="@+id/buttonAleatoire"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:background="#3498db"
+            android:text="ALEATOIRE" />
+
+        <Button
+            android:id="@+id/buttonEditeur"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:background="#2ecc71"
+            android:text="EDITEUR" />
+
+    </LinearLayout>
+
+</LinearLayout>

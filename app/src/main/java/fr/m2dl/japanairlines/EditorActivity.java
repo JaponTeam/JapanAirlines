@@ -1,6 +1,7 @@
 package fr.m2dl.japanairlines;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -34,6 +35,7 @@ public class EditorActivity extends ActionBarActivity implements View.OnTouchLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
+        MainActivity.edited = true;
         final ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.post(new Runnable() {
             @Override
@@ -151,9 +153,12 @@ public class EditorActivity extends ActionBarActivity implements View.OnTouchLis
         return ret;
     }
 
+    public static ArrayList<Obstacle> editedObstacles;
     private void startLevel() {
-        generateObstacles();
-        // Launch intent
+        editedObstacles = generateObstacles();
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override

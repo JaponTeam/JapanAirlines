@@ -33,7 +33,9 @@ import fr.m2dl.japanairlines.services.RandomGenerator;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
+    public static boolean edited = false;
     private boolean isGameOver = false;
+
     private boolean isStarted;
     private LinearLayout layout2;
     private LinearLayout layout;
@@ -136,12 +138,23 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         t.start();
 
-        int i =0;
-        for(Obstacle o :RandomGenerator.generate()){
-            putObstacle(o);
-            ++i;
+        if(edited){
+            int i =0;
+            for(Obstacle o :EditorActivity.editedObstacles){
+                putObstacle(o);
+                ++i;
+            }
+            putObstacle(new Obstacle(-2,i));
+        }else{
+            int i =0;
+            for(Obstacle o :RandomGenerator.generate()){
+                putObstacle(o);
+                ++i;
+            }
+            putObstacle(new Obstacle(-2,i));
+
         }
-        putObstacle(new Obstacle(-2,i));
+
 
     }
 
