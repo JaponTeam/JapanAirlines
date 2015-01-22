@@ -3,6 +3,7 @@ package fr.m2dl.japanairlines;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,7 +18,7 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 
 
-public class EditorActivity extends Activity implements View.OnTouchListener {
+public class EditorActivity extends ActionBarActivity implements View.OnTouchListener {
 
     private static long LEVEL_LENGTH = 100;
     private int screenHeight;
