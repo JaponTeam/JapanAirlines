@@ -140,7 +140,7 @@ public class EditorActivity extends ActionBarActivity implements View.OnTouchLis
             for (int i = 0; i < 3; ++i) {
                 Obstacle obstacle = null;
                 if(tab[i].isChecked()) {
-                    obstacle = new Obstacle(i, cells.indexOf(tab));
+                    obstacle = new Obstacle(i, cells.size() - cells.indexOf(tab) - 1);
                 } else {
                     obstacle = new Obstacle(-1, -1);
                 }
