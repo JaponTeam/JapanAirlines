@@ -27,10 +27,12 @@ import java.util.TimerTask;
 import fr.m2dl.japanairlines.domain.Plane;
 import fr.m2dl.japanairlines.services.BlowRecorder;
 import fr.m2dl.japanairlines.services.HeightManager;
+import fr.m2dl.japanairlines.services.RandomGenerator;
 
 
 public class MainActivity extends Activity implements SensorEventListener {
 
+    private boolean isGameOver = false;
     private LinearLayout layout2;
     private LinearLayout layout;
     private RelativeLayout mainLayout;
@@ -49,6 +51,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Plane plane;
 
     private int screenHeight;
+    private int screenWidth;
 
     private Activity activity;
     public void updateHeightView() {
@@ -64,7 +67,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        RandomGenerator.generate();
     this.activity = this;
+        isGameOver = false;
         plane = new Plane();
         heightManager = new HeightManager(plane, this);
         startBlowRecording();
@@ -77,14 +82,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         layout2.setLayoutParams(layout.getLayoutParams());
         layout2.setBackgroundResource(R.drawable.grass);
 
-//        layout2.setY(layout2.getY()+layout2.getHeight());
-//        layout2.setX(layout.getX());
-
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         screenHeight = metrics.heightPixels;
+        screenWidth = metrics.widthPixels;
 
         TypedValue tv = new TypedValue();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -100,7 +103,16 @@ public class MainActivity extends Activity implements SensorEventListener {
         layout2.setX(layout.getX());
 
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
+
+
+
         planeImage = (ImageView) findViewById(R.id.plane);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(screenHeight/7, screenHeight/7);
+        planeImage.setLayoutParams(layoutParams);
+        planeImage.setX(screenWidth/2);
+        planeImage.setY(screenHeight-screenWidth/4);
+
+
         roadImage = (ImageView) findViewById(R.id.road);
         mHandler = new Handler();
         altimeterValue = (TextView) findViewById(R.id.altimeterValue);
@@ -119,7 +131,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         t.start();
 
-//        obstacle(256,300);
+        obstacle(0,0);
+        obstacle(0,1);
+        obstacle(0,2);
+        obstacle(0,3);
+        obstacle(0,4);
+        obstacle(1,5);
+        obstacle(2,6);
+        obstacle(3,7);
 //        obstacle(512,0);
 //        obstacle(0,678);
 //        obstacle(1500,2540);
@@ -150,6 +169,8 @@ public class MainActivity extends Activity implements SensorEventListener {
          * Un autre bénéfice étant que l'on utilise moins d'énergie et de CPU.&#160;»
          */
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+
+
         super.onResume();
     }
 
@@ -169,7 +190,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
 
-                Log.d("",layout.getY()+"---"+screenHeight);
+//                Log.d("",layout.getY()+"---"+screenHeight+"--"+ screenWidth);
                 if(layout.getY()>= screenHeight){
                     layout.setY(-screenHeight);
                     roadImage.setVisibility(View.INVISIBLE);
@@ -232,18 +253,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
         obstacle.setImageResource(R.drawable.obstacle);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth/3, screenHeight/5);
+        obstacle.setLayoutParams(layoutParams);
+
 
 
         mRunnableObstalce = new Runnable() {
             @Override
             public void run() {
-                if(isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+                if(!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+
+                    isGameOver = true;
                     planeImage.setBackgroundResource(R.drawable.explose);
-
                     Intent intent = new Intent(getApplicationContext(), GameOverActivity.class);
-
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //activity.finish();
                     getApplicationContext().startActivity(intent);
 
                 }
@@ -263,8 +286,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
         mainLayout.addView(obstacle);
-        obstacle.setX(x);
-        obstacle.setY(-y-300);
+        obstacle.setX(x*(screenWidth/3));
+        obstacle.setY(-y*(screenHeight/5));
 
     }
 

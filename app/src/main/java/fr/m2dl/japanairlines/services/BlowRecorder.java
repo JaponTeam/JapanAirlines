@@ -23,8 +23,13 @@ public class BlowRecorder {
         } catch (IOException e) {
             Log.e("###", " ### prepare() failed");
         }
+        try{
 
-        mRecorder.start();
+            mRecorder.start();
+        }catch (Exception e){
+
+        }
+
     }
 
     public void stopRecording() {
