@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -135,9 +136,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         t.start();
 
+        int i =0;
         for(Obstacle o :RandomGenerator.generate()){
             putObstacle(o);
+            ++i;
         }
+        putObstacle(new Obstacle(-2,i));
 
     }
 
@@ -245,27 +249,44 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
+
     public void putObstacle(Obstacle obstacleObject){
 
         if(obstacleObject.isVide()){
             return;
         }
+        final Obstacle copiePourPiste = obstacleObject;
+
         float x = obstacleObject.getX();
         float y = obstacleObject.getY();
         final ImageView obstacle = new ImageView(this);
         final Runnable mRunnableObstalce;
 
+        if(obstacleObject.isPisteAtter()){
 
-        obstacle.setImageResource(R.drawable.obstacle);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth/3, screenHeight/5);
-        obstacle.setLayoutParams(layoutParams);
+            obstacle.setImageResource(R.drawable.roadatter);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, screenHeight);
+            obstacle.setLayoutParams(layoutParams);
+
+
+        }else{
+
+            obstacle.setImageResource(R.drawable.obstacle);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth/3, screenHeight/5);
+            obstacle.setLayoutParams(layoutParams);
+
+
+        }
 
 
 
         mRunnableObstalce = new Runnable() {
             @Override
             public void run() {
-                if(!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+                if(copiePourPiste.isPisteAtter() && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+                    Log.d("","Gagné");
+                }
+                if(!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
 
                     isGameOver = true;
                     planeImage.setBackgroundResource(R.drawable.explose);
@@ -289,9 +310,19 @@ public class MainActivity extends Activity implements SensorEventListener {
         timer.schedule(timerTask, 0, 10);
 
 
-        mainLayout.addView(obstacle);
-        obstacle.setX(x*(screenWidth/3));
-        obstacle.setY(-y*(screenHeight/5));
+        mainLayout.addView(obstacle,2);
+
+        if(obstacleObject.isPisteAtter()){
+
+            obstacle.setX(0);
+            obstacle.setY(-y*(screenHeight/3));
+
+        }else
+        {
+            obstacle.setX(x*(screenWidth/3));
+            obstacle.setY(-y*(screenHeight/5));
+
+        }
 
     }
 

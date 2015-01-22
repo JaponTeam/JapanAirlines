@@ -24,4 +24,8 @@ public class Obstacle {
     public boolean isVide(){
         return (this.getX()==-1);
     }
+
+    public boolean isPisteAtter(){
+        return (this.getX()==-2);
+    }
 }
