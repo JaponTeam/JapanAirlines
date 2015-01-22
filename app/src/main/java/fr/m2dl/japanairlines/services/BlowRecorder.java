@@ -10,24 +10,24 @@ import java.io.IOException;
  */
 public class BlowRecorder {
     private MediaRecorder mRecorder = new MediaRecorder();
+    private boolean isStarted = false;
 
     private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mRecorder.setOutputFile("/dev/null");
+        if(!isStarted) {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mRecorder.setOutputFile("/dev/null");
 
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e("###", " ### prepare() failed");
-        }
-        try{
+            try {
+                mRecorder.prepare();
+            } catch (IOException e) {
+                Log.e("###", " ### prepare() failed");
+            }
 
             mRecorder.start();
-        }catch (Exception e){
-
+            isStarted = true;
         }
 
     }

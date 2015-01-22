@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import fr.m2dl.japanairlines.domain.Obstacle;
 import fr.m2dl.japanairlines.domain.Plane;
 import fr.m2dl.japanairlines.services.BlowRecorder;
 import fr.m2dl.japanairlines.services.HeightManager;
@@ -33,6 +33,7 @@ import fr.m2dl.japanairlines.services.RandomGenerator;
 public class MainActivity extends Activity implements SensorEventListener {
 
     private boolean isGameOver = false;
+    private boolean isStarted;
     private LinearLayout layout2;
     private LinearLayout layout;
     private RelativeLayout mainLayout;
@@ -53,7 +54,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private int screenHeight;
     private int screenWidth;
 
-    private Activity activity;
+    public static Activity activity;
     public void updateHeightView() {
         runOnUiThread(new Runnable() {
             @Override
@@ -67,12 +68,15 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RandomGenerator.generate();
     this.activity = this;
         isGameOver = false;
         plane = new Plane();
         heightManager = new HeightManager(plane, this);
-        startBlowRecording();
+
+        if(!isStarted){
+
+            startBlowRecording();
+        }
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -131,33 +135,27 @@ public class MainActivity extends Activity implements SensorEventListener {
         });
         t.start();
 
-        obstacle(0,0);
-        obstacle(0,1);
-        obstacle(0,2);
-        obstacle(0,3);
-        obstacle(0,4);
-        obstacle(1,5);
-        obstacle(2,6);
-        obstacle(3,7);
-//        obstacle(512,0);
-//        obstacle(0,678);
-//        obstacle(1500,2540);
-//        obstacle(0,678);
+        for(Obstacle o :RandomGenerator.generate()){
+            putObstacle(o);
+        }
 
     }
 
     private void startBlowRecording() {
-        Thread blowRecorderThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                blowRecorder = new BlowRecorder();
-                while (true) {
-                    blowRecorder.recordBlow();
-                    heightManager.movePlaneUp();
+            Thread blowRecorderThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    blowRecorder = new BlowRecorder();
+                    while (!isGameOver) {
+                        blowRecorder.recordBlow();
+                        heightManager.movePlaneUp();
+                    }
+                    blowRecorder.stopRecording();
                 }
-            }
-        });
-        blowRecorderThread.start();
+            });
+            blowRecorderThread.start();
+
+
     }
 
     @Override
@@ -247,7 +245,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
-    public void obstacle(float x, float y){
+    public void putObstacle(Obstacle obstacleObject){
+
+        if(obstacleObject.isVide()){
+            return;
+        }
+        float x = obstacleObject.getX();
+        float y = obstacleObject.getY();
         final ImageView obstacle = new ImageView(this);
         final Runnable mRunnableObstalce;
 

@@ -18,6 +18,7 @@ public class GameOverActivity extends Activity
         @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+            MainActivity.activity.finish();;
         setContentView(R.layout.activity_gameover);
         boutonRetour = (Button) findViewById(R.id.buttonRetour);
 
