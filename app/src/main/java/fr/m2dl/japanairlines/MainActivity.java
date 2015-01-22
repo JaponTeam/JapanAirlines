@@ -1,16 +1,37 @@
 package fr.m2dl.japanairlines;
 
+import android.app.Activity;
+import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import fr.m2dl.japanairlines.domain.Plane;
 import fr.m2dl.japanairlines.services.BlowRecorder;
 import fr.m2dl.japanairlines.services.HeightManager;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity implements SensorEventListener {
+
+    private LinearLayout layout;
+    private RelativeLayout mainLayout;
+    private Handler mHandler;
+    private Runnable mStatusChecker;
+    private SensorManager sensorManager;
+    private ImageView planeImage;
+
+    private Sensor accelerometer;
 
     private HeightManager heightManager;
     private Plane plane;
@@ -23,6 +44,26 @@ public class MainActivity extends ActionBarActivity {
         plane = new Plane();
         heightManager = new HeightManager(plane);
         startBlowRecording();
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        layout = (LinearLayout) findViewById(R.id.layout);
+        mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
+        planeImage = (ImageView) findViewById(R.id.plane);
+        mHandler = new Handler();
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                affichage();
+
+                mStatusChecker.run();
+            }
+        });
+        t.start();
+
+        obstacle();
+
     }
 
     private void startBlowRecording() {
@@ -39,26 +80,115 @@ public class MainActivity extends ActionBarActivity {
         blowRecorder.start();
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onResume() {
+        /* Ce qu'en dit Google&#160;dans le cas de l'accéléromètre :
+         * «&#160; Ce n'est pas nécessaire d'avoir les évènements des capteurs à un rythme trop rapide.
+         * En utilisant un rythme moins rapide (SENSOR_DELAY_UI), nous obtenons un filtre
+         * automatique de bas-niveau qui "extrait" la gravité  de l'accélération.
+         * Un autre bénéfice étant que l'on utilise moins d'énergie et de CPU.&#160;»
+         */
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        super.onResume();
+    }
+
+    public void affichage(){
+
+        mStatusChecker = new Runnable() {
+            @Override
+            public void run() {
+
+                ImageView i1 = new ImageView(getApplicationContext());
+
+
+
+                i1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+
+
+                i1.setImageResource(R.drawable.grass);
+                layout.addView(i1, 0);
+
+
+                mHandler.postDelayed(mStatusChecker, 300);
+            }
+        };
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onSensorChanged(SensorEvent sensorEvent)
+    {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+           float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            if(planeImage.getX() <0){
+                planeImage.setX(0);
+            }
+            if(planeImage.getX() > width-planeImage.getWidth()){
+                planeImage.setX(width-planeImage.getWidth());
+            }
+
+            Log.d("",x+"--"+y);
+            planeImage.setX(planeImage.getX()-x*5);
+            planeImage.setX(planeImage.getX()-x*5);
+
         }
 
-        return super.onOptionsItemSelected(item);
+
+    }
+
+    // I've chosen to not implement this method
+
+    @Override
+    public void onAccuracyChanged(Sensor arg0, int arg1)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    Runnable mRunnableObstalce;
+
+    public void obstacle(){
+        final ImageView obstacle = new ImageView(this);
+
+        obstacle.setImageResource(R.drawable.obstacle);
+
+        final Handler mHandlerObstacle = new Handler();
+        mRunnableObstalce = new Runnable() {
+            @Override
+            public void run() {
+                obstacle.setY(obstacle.getY() + 5);
+                mHandlerObstacle.postDelayed(mRunnableObstalce, 10);
+
+            }
+        };
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                affichage();
+
+                mRunnableObstalce.run();
+            }
+        });
+        t.start();
+
+
+
+
+        mainLayout.addView(obstacle);
+        obstacle.setX(0);
+        obstacle.setY(-300);
+
+
+
+
+
     }
 }
