@@ -5,27 +5,37 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import fr.m2dl.japanairlines.domain.Plane;
 import fr.m2dl.japanairlines.services.BlowRecorder;
+import fr.m2dl.japanairlines.services.HeightManager;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private HeightManager heightManager;
+    private Plane plane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        plane = new Plane();
+        heightManager = new HeightManager(plane);
+        startBlowRecording();
+    }
+
+    private void startBlowRecording() {
         Thread blowRecorder = new Thread(new Runnable() {
             @Override
             public void run() {
                 BlowRecorder blowRecorder = new BlowRecorder();
                 while (true) {
                     blowRecorder.recordBlow();
-                    //TODO User is blowing
+                    heightManager.movePlaneUp();
                 }
             }
         });
-
         blowRecorder.start();
     }
 
