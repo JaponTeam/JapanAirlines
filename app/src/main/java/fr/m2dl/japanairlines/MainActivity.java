@@ -59,6 +59,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private int screenWidth;
 
     public static Activity activity;
+    private Timer timerForward;
+
     public void updateHeightView() {
         runOnUiThread(new Runnable() {
             @Override
@@ -72,15 +74,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    this.activity = this;
+        this.activity = this;
         isGameOver = false;
         plane = new Plane();
         heightManager = new HeightManager(plane, this);
 
-        if(!isStarted){
-
-            startBlowRecording();
-        }
+        startBlowRecording();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -160,20 +159,18 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void startBlowRecording() {
-            Thread blowRecorderThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    blowRecorder = new BlowRecorder();
-                    while (!isGameOver) {
-                        blowRecorder.recordBlow();
-                        heightManager.movePlaneUp();
-                    }
-                    blowRecorder.stopRecording();
+        Thread blowRecorderThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                blowRecorder = new BlowRecorder();
+                while (!isGameOver) {
+                    blowRecorder.recordBlow();
+                    heightManager.movePlaneUp();
                 }
-            });
-            blowRecorderThread.start();
 
-
+            }
+        });
+        blowRecorderThread.start();
     }
 
     @Override
@@ -274,7 +271,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         float x = obstacleObject.getX();
         float y = obstacleObject.getY();
         final ImageView obstacle = new ImageView(this);
-        final Runnable mRunnableObstalce;
+        final Runnable mRunnableObstacle;
 
         if(obstacleObject.isPisteAtter()){
 
@@ -294,19 +291,31 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
 
-        mRunnableObstalce = new Runnable() {
+
+        mRunnableObstacle = new Runnable() {
             @Override
             public void run() {
                 if(copiePourPiste.isPisteAtter() && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
                     gagne = true;
-                }
-                if(!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
-gagne = false;
-                    isGameOver = true;
                     planeImage.setBackgroundResource(R.drawable.explose);
+                    timerForward.cancel();
+                    timerForward.purge();
                     Intent intent = new Intent(getApplicationContext(), GameOverActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(intent);
+                    finish();
+                }
+                if(!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+                    Log.d("","Perdu !");
+                    gagne = false;
+                    isGameOver = true;
+                    planeImage.setBackgroundResource(R.drawable.explose);
+                    timerForward.cancel();
+                    timerForward.purge();
+                    Intent intent = new Intent(getApplicationContext(), GameOverActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                    finish();
 
                 }
                 obstacle.setY(obstacle.getY() + 5);
@@ -314,17 +323,15 @@ gagne = false;
             }
         };
 
-
-        Timer timer = new Timer();
+        timerForward = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
-            public void run() { runOnUiThread(mRunnableObstalce);
+            public void run() { runOnUiThread(mRunnableObstacle);
             }
         };
-        timer.schedule(timerTask, 0, 10);
+        timerForward.schedule(timerTask, 0, 10);
 
-
-        mainLayout.addView(obstacle,2);
+        mainLayout.addView(obstacle, 2);
 
         if(obstacleObject.isPisteAtter()){
 

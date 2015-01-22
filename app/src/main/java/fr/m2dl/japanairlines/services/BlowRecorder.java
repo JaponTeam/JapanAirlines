@@ -10,32 +10,33 @@ import java.io.IOException;
  */
 public class BlowRecorder {
     private MediaRecorder mRecorder = new MediaRecorder();
-    private boolean isStarted = false;
+
+    private boolean recording;
 
     private void startRecording() {
-        if(!isStarted) {
-            mRecorder = new MediaRecorder();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mRecorder.setOutputFile("/dev/null");
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mRecorder.setOutputFile("/dev/null");
 
-            try {
-                mRecorder.prepare();
-            } catch (IOException e) {
-                Log.e("###", " ### prepare() failed");
-            }
-
-            mRecorder.start();
-            isStarted = true;
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e("###", " ### prepare() failed");
         }
 
+        recording = true;
+        mRecorder.start();
     }
 
     public void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        if (recording) {
+            recording = false;
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
     }
 
     public void recordBlow() {
@@ -43,7 +44,6 @@ public class BlowRecorder {
 
         startRecording();
 
-        boolean recording = true;
         while (recording) {
             if (mRecorder.getMaxAmplitude() > 27000) {
                 Log.d("", "## Blowing value : " + mRecorder.getMaxAmplitude());
