@@ -16,7 +16,7 @@ public class RandomGenerator {
         ArrayList<Obstacle> ret = new ArrayList<>();
 
         Random r = new Random();
-        for(int i =0; i<3; ++i){
+        for(int i =0; i<30; ++i){
             ret.add(new Obstacle(r.nextInt(3),i*3));
             ret.add(new Obstacle(-1,-1));
             ret.add(new Obstacle(-1,-1));

@@ -1,8 +1,5 @@
 package fr.m2dl.japanairlines.services;
 
-import android.app.Activity;
-import android.widget.TextView;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,7 +12,7 @@ import fr.m2dl.japanairlines.domain.Plane;
 public class HeightManager {
 
     private static final long IN_FIVE_SECONDS = 5000;
-    private static final long EVERY_FIVE_SECOND = 5000;
+    private static final long EVERY_SECOND = 1000;
     private static final long NOW = 0;
 
     private Plane plane;
@@ -34,7 +31,13 @@ public class HeightManager {
             }
         };
         
-        fallTimer.schedule(falling, NOW, EVERY_FIVE_SECOND);
+        fallTimer.schedule(falling, NOW, EVERY_SECOND);
+    }
+
+    public void stop() {
+        fallTimer.cancel();
+        fallTimer.purge();
+        fallTimer = null;
     }
 
     private void restartTimer() {
@@ -48,7 +51,7 @@ public class HeightManager {
 
         fallTimer.cancel();
         fallTimer = new Timer();
-        fallTimer.schedule(falling, IN_FIVE_SECONDS, EVERY_FIVE_SECOND);
+        fallTimer.schedule(falling, IN_FIVE_SECONDS, EVERY_SECOND);
     }
 
     private void updateUi() {

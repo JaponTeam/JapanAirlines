@@ -297,6 +297,8 @@ public class MainActivity extends Activity implements SensorEventListener {
             public void run() {
                 if(copiePourPiste.isPisteAtter() && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
                     gagne = true;
+                    isGameOver = true;
+                    heightManager.stop();
                     planeImage.setBackgroundResource(R.drawable.explose);
                     timerForward.cancel();
                     timerForward.purge();
@@ -305,10 +307,11 @@ public class MainActivity extends Activity implements SensorEventListener {
                     getApplicationContext().startActivity(intent);
                     finish();
                 }
-                if(!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight())){
+                if(plane.getCurrentHeightLevel() == 0 || (!copiePourPiste.isPisteAtter() &&!isGameOver && isInBox(planeImage.getX(), planeImage.getY(), planeImage.getWidth(), planeImage.getHeight(), obstacle.getX(), obstacle.getY(),obstacle.getWidth(), obstacle.getHeight()))){
                     Log.d("","Perdu !");
                     gagne = false;
                     isGameOver = true;
+                    heightManager.stop();
                     planeImage.setBackgroundResource(R.drawable.explose);
                     timerForward.cancel();
                     timerForward.purge();

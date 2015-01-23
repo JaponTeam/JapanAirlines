@@ -45,7 +45,7 @@ public class BlowRecorder {
         startRecording();
 
         while (recording) {
-            if (mRecorder.getMaxAmplitude() > 27000) {
+            if (mRecorder.getMaxAmplitude() > 32000) {
                 Log.d("", "## Blowing value : " + mRecorder.getMaxAmplitude());
                 stopRecording();
                 recording = false;

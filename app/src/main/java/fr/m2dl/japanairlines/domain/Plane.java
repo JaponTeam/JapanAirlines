@@ -6,9 +6,9 @@ import android.util.Log;
  * Created by msoum on 22/01/15.
  */
 public class Plane {
-    private static final int MAX_HEIGHT = 3;
+    private static final int MAX_HEIGHT = 10;
 
-    private int currentHeightLevel;
+    private int currentHeightLevel = 10;
     private int distanceFromStart;
     private int distanceToEnd;
 
